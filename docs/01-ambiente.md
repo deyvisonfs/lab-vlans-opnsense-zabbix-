@@ -5,7 +5,7 @@
 ## 🇧🇷 Português
 
 ### Plataforma de virtualização
-`[preencher: VirtualBox / VMware / Proxmox / GNS3]` · versão `[preencher]`
+VirtualBox · versão `[preencher]`
 
 ### Máquinas virtuais
 | VM | Função | SO | vCPU | RAM | Disco | VLAN |
@@ -16,7 +16,9 @@
 | cli-user | Cliente de teste (Usuário) | `[SO]` | `[ ]` | `[ ]` | `[ ]` | 20 |
 
 ### Redes virtuais
-`[descrever os adaptadores de rede: NAT/Bridge/Rede interna, qual VM usa qual]`
+- `fw-opnsense`: adaptador 1 em **NAT** (WAN) e adaptador 2 em **Rede Interna** `lab-lan` (LAN)
+- Demais VMs: adaptador em **Rede Interna** `lab-lan`
+- Detalhes em [02 · OPNsense](02-opnsense.md)
 
 ### Requisitos do computador host
 `[preencher: CPU, RAM total, espaço em disco]`
@@ -29,7 +31,7 @@
 ## 🇺🇸 English
 
 ### Virtualization platform
-`[fill in: VirtualBox / VMware / Proxmox / GNS3]` · version `[fill in]`
+VirtualBox · version `[fill in]`
 
 ### Virtual machines
 | VM | Role | OS | vCPU | RAM | Disk | VLAN |
@@ -40,7 +42,9 @@
 | cli-user | Test client (User) | `[OS]` | `[ ]` | `[ ]` | `[ ]` | 20 |
 
 ### Virtual networks
-`[describe the network adapters: NAT/Bridge/Internal network, which VM uses which]`
+- `fw-opnsense`: adapter 1 on **NAT** (WAN) and adapter 2 on **Internal Network** `lab-lan` (LAN)
+- Other VMs: adapter on **Internal Network** `lab-lan`
+- Details in [02 · OPNsense](02-opnsense.md)
 
 ### Host machine requirements
 `[fill in: CPU, total RAM, disk space]`

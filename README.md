@@ -19,7 +19,7 @@ Montar uma rede segmentada em VLANs, controlada por um firewall OPNsense e monit
 ### Ambiente
 | Item | Valor |
 |---|---|
-| Virtualização | `[preencher: VirtualBox / VMware / Proxmox / GNS3]` |
+| Virtualização | VirtualBox `[versão]` |
 | Firewall | OPNsense `[versão]` |
 | Monitoramento | Zabbix `[versão]` |
 | Clientes de teste | `[ex.: Windows Server, Linux, PC cliente]` |
@@ -95,7 +95,7 @@ Build a VLAN-segmented network controlled by an OPNsense firewall and monitored 
 ### Environment
 | Item | Value |
 |---|---|
-| Virtualization | `[fill in: VirtualBox / VMware / Proxmox / GNS3]` |
+| Virtualization | VirtualBox `[version]` |
 | Firewall | OPNsense `[version]` |
 | Monitoring | Zabbix `[version]` |
 | Test clients | `[e.g., Windows Server, Linux, client PC]` |
