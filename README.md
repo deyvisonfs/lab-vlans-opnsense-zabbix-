@@ -20,8 +20,8 @@ Montar uma rede segmentada em VLANs, controlada por um firewall OPNsense e monit
 | Item | Valor |
 |---|---|
 | Virtualização | VirtualBox `[versão]` |
-| Firewall | OPNsense `[versão]` |
-| Monitoramento | Zabbix `[versão]` |
+| Firewall | OPNsense `[26.7.7]` |
+| Monitoramento | Zabbix `[7]` |
 | Clientes de teste | `[ex.: Windows Server, Linux, PC cliente]` |
 
 ### Topologia
