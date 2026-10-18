@@ -143,8 +143,8 @@ Build a VLAN-segmented network controlled by an OPNsense firewall and monitored 
 | Zabbix monitors OPNsense (agent at `192.168.30.1:10050`) | Green ZBX availability | Green ZBX, 108 items collected |
 | Zabbix detects powered-off host | Alert within 3 min | **Alerted in about 2 min** (Kali powered off at 15:17; `High` problem at 15:19:21). See [step 7](docs/07-gatilho-host-fora-do-ar.md) |
 | Zabbix alerts on high CPU (Linux template, average > 90% for 5 min) | Alert when CPU is saturated and resolve when it normalizes | **Alerted at 15:39:33** (load started at 15:33) and **resolved at 15:40:33**. See [step 8](docs/08-gatilhos-cpu-disco.md) |
-| Zabbix notifies on Telegram (problem and recovery) | Message when a problem opens and resolves | **Arrived in both cases**: problem at 18:13:33 and resolved at 18:16:33, with a message in the same minute. See [step 9](docs/09-notificacao-telegram.md) |
 | Zabbix alerts on low disk space (`/` above 80%) | Alert when usage goes over 80% | **Active alert on Kali** (26.8 GB disk), raised by the template with no extra configuration. See [step 8](docs/08-gatilhos-cpu-disco.md) |
+| Zabbix notifies on Telegram (problem and recovery) | Message when a problem opens and resolves | **Arrived in both cases**: problem at 18:13:33 and resolved at 18:16:33, with a message in the same minute. See [step 9](docs/09-notificacao-telegram.md) |
 
 Evidence with screenshots in [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.md) and [`docs/05-zabbix-vlan30.md`](docs/05-zabbix-vlan30.md).
 
