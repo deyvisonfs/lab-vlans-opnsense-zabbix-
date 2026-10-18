@@ -70,7 +70,7 @@ Conclusão: o DHCP da VLAN 20 funciona, o tráfego marcado (802.1Q) chega ao OPN
 - A regra de bloqueio da VLAN 20 afeta a rede `vlan030` inteira, incluindo o IP do próprio firewall nela (`192.168.30.1`). Foi isso que o último teste verificou.
 
 ### Próximo passo
-05 · Mover o Zabbix para a VLAN 30 (IP fixo `192.168.30.10/24`, gateway `192.168.30.1`) e monitorar o OPNsense e o cliente.
+[05 · Zabbix na VLAN 30 e monitoramento do OPNsense](05-zabbix-vlan30.md)
 
 ---
 
@@ -142,4 +142,4 @@ Conclusion: VLAN 20 DHCP works, tagged (802.1Q) traffic reaches OPNsense, intern
 - The VLAN 20 block rule affects the whole `vlan030` network, including the firewall's own address on it (`192.168.30.1`). That is what the last test checked.
 
 ### Next step
-05 · Move Zabbix to VLAN 30 (static IP `192.168.30.10/24`, gateway `192.168.30.1`) and monitor OPNsense and the client.
+[05 · Zabbix on VLAN 30 and OPNsense monitoring](05-zabbix-vlan30.md)
