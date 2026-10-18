@@ -19,10 +19,10 @@ Montar uma rede segmentada em VLANs, controlada por um firewall OPNsense e monit
 ### Ambiente
 | Item | Valor |
 |---|---|
-| Virtualização | VirtualBox `[versão]` |
+| Virtualização | VirtualBox 7.0 |
 | Firewall | OPNsense 26.7.7 |
 | Monitoramento | Zabbix 6.4.21 (Docker Compose) |
-| Clientes de teste | `[ex.: Windows Server, Linux, PC cliente]` |
+| Clientes de teste | Kali Linux (VM na VLAN 20) |
 
 ### Topologia
 ![Topologia do lab / Lab topology](docs/img/topologia.svg)
@@ -104,10 +104,10 @@ Build a VLAN-segmented network controlled by an OPNsense firewall and monitored 
 ### Environment
 | Item | Value |
 |---|---|
-| Virtualization | VirtualBox `[version]` |
+| Virtualization | VirtualBox 7.0 |
 | Firewall | OPNsense 26.7.7 |
 | Monitoring | Zabbix 6.4.21 (Docker Compose) |
-| Test clients | `[e.g., Windows Server, Linux, client PC]` |
+| Test clients | Kali Linux (VM on VLAN 20) |
 
 ### Topology
 ![Lab topology](docs/img/topologia.svg)
