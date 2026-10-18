@@ -24,7 +24,9 @@ Ele usa o item `agent.ping` do template `Linux by Zabbix agent`, lido a cada 1 m
 3. O ZBX do Kali ficou vermelho às **15:19**.
 4. Em **Monitoring → Problems**, o problema `Kali fora do ar (sem resposta do agente)` foi registrado às **15:19:21**, severidade `High`.
 
-Tempo de detecção: **cerca de 2 minutos**, dentro do esperado.
+5. Ao ligar a VM de volta (o `top` do Kali às 15:35 marcava 8 min de uptime, então ela subiu por volta de 15:27), o problema virou **RESOLVED** às **15:29:07**.
+
+Tempo de detecção: **cerca de 2 minutos**, dentro do esperado. O gatilho do próprio template, `Linux: Zabbix agent is not available (for 3m)`, só alertou às **15:22:06**, cerca de 2 min 45 s depois do meu.
 
 ![ZBX do Kali vermelho](img/07-kali-zbx-vermelho.png)
 *Depois do desligamento, o Kali aparece com ZBX vermelho e 2 problemas ativos; OPNsense e Zabbix seguem verdes.*
@@ -32,12 +34,16 @@ Tempo de detecção: **cerca de 2 minutos**, dentro do esperado.
 ![Alerta de host fora do ar](img/07-problemas-alerta.png)
 *Problema `Kali fora do ar (sem resposta do agente)`, severidade `High`, registrado às 15:19:21.*
 
+![Recuperação do host](img/07-recuperacao-host.png)
+*Com o Kali de volta: `Kali fora do ar` e `Zabbix agent is not available` em RESOLVED às 15:29:07 e 15:29:06. Também aparecem os avisos de reinício (`Kali has been restarted`) e de carga alta durante o boot, que se resolveram sozinhos.*
+
 ### Validação
 | Teste | Esperado | Resultado obtido |
 |---|---|---|
 | Gatilho criado e ativo no host Kali | Sim | **Sim** |
 | ZBX do Kali fica vermelho ao desligar a VM | Sim | **Sim**, às 15:19 |
 | Problema `High` registrado | Em até 3 min | **Sim**, às 15:19:21 (cerca de 2 min após o desligamento às 15:17) |
+| Problema resolve sozinho quando o host volta | Sim | **Sim**, RESOLVED às 15:29:07 |
 
 ### Achado extra
 Na mesma tela havia outro problema ativo no Kali desde as 13:28: `FS [/]: Space is low (used > 80%, total 26.8GB)`, gerado por um gatilho do próprio template. O disco do Kali estava com mais de 80% de uso, e foi o Zabbix que mostrou isso sem eu ter configurado nada.
@@ -49,11 +55,10 @@ Na mesma tela havia outro problema ativo no Kali desde as 13:28: `FS [/]: Space 
 
 ### Pontos de melhoria
 - Criar uma **ação** (Alerts → Actions) para notificar por e-mail ou mensageria quando o problema abrir. Hoje o alerta só aparece no painel.
-- Registrar também o tempo de **recuperação**, ligando a VM de volta e vendo o problema virar Resolved.
 - Liberar espaço no disco do Kali ou ajustar o limite do gatilho de espaço.
 
 ### Próximo passo
-Ações de notificação e gatilhos de CPU e disco, para fechar o item "triggers e alertas" do plano.
+[08 · Gatilhos de CPU e de disco](08-gatilhos-cpu-disco.md)
 
 ---
 
@@ -79,7 +84,9 @@ It uses the `agent.ping` item from the `Linux by Zabbix agent` template, read ev
 3. Kali's ZBX turned red at **15:19**.
 4. In **Monitoring → Problems**, the problem `Kali fora do ar (sem resposta do agente)` was logged at **15:19:21**, severity `High`.
 
-Detection time: **about 2 minutes**, as expected.
+5. When the VM was powered back on (Kali's `top` at 15:35 showed 8 min of uptime, so it came up around 15:27), the problem turned **RESOLVED** at **15:29:07**.
+
+Detection time: **about 2 minutes**, as expected. The template's own trigger, `Linux: Zabbix agent is not available (for 3m)`, only alerted at **15:22:06**, about 2 min 45 s after mine.
 
 ![Kali ZBX red](img/07-kali-zbx-vermelho.png)
 *After the shutdown, Kali shows a red ZBX and 2 active problems; OPNsense and Zabbix stay green.*
@@ -87,12 +94,16 @@ Detection time: **about 2 minutes**, as expected.
 ![Host-down alert](img/07-problemas-alerta.png)
 *Problem `Kali fora do ar (sem resposta do agente)`, severity `High`, logged at 15:19:21.*
 
+![Host recovery](img/07-recuperacao-host.png)
+*With Kali back: `Kali fora do ar` and `Zabbix agent is not available` RESOLVED at 15:29:07 and 15:29:06. The restart notice (`Kali has been restarted`) and the high load warning during boot also show up and cleared by themselves.*
+
 ### Validation
 | Test | Expected | Actual |
 |---|---|---|
 | Trigger created and enabled on host Kali | Yes | **Yes** |
 | Kali's ZBX turns red when the VM is powered off | Yes | **Yes**, at 15:19 |
 | `High` problem logged | Within 3 min | **Yes**, at 15:19:21 (about 2 min after the 15:17 shutdown) |
+| Problem resolves by itself when the host returns | Yes | **Yes**, RESOLVED at 15:29:07 |
 
 ### Extra finding
 The same screen showed another active problem on Kali since 13:28: `FS [/]: Space is low (used > 80%, total 26.8GB)`, raised by a trigger from the template itself. Kali's disk was over 80% full, and Zabbix surfaced it without any configuration from me.
@@ -104,8 +115,7 @@ The same screen showed another active problem on Kali since 13:28: `FS [/]: Spac
 
 ### Improvements
 - Create an **action** (Alerts → Actions) to notify by e-mail or messaging when the problem opens. Today the alert only shows on the dashboard.
-- Also record the **recovery** time by powering the VM back on and watching the problem turn Resolved.
 - Free disk space on Kali or tune the space trigger threshold.
 
 ### Next step
-Notification actions and CPU and disk triggers, to close the "triggers and alerts" item of the plan.
+[08 · CPU and disk triggers](08-gatilhos-cpu-disco.md)
