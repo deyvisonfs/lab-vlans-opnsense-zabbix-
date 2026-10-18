@@ -55,7 +55,7 @@ Montar uma rede segmentada em VLANs, controlada por um firewall OPNsense e monit
 | Ping VLAN 20 → internet (`8.8.8.8`) | Sucesso (via NAT) | Sucesso: 3/3 respostas, 0% de perda (~38 ms) |
 | Ping VLAN 20 → VLAN 30 | Bloqueado | Bloqueado: 100% de perda (testado em `192.168.30.1` e `192.168.30.10`) |
 | Zabbix monitora o OPNsense (agente em `192.168.30.1:10050`) | Disponibilidade ZBX verde | ZBX verde, 108 itens coletados |
-| Zabbix detecta host desligado | Alerta em até 1 min | Pendente: teste previsto no passo 6 |
+| Zabbix detecta host desligado | Alerta em até 3 min | **Alertou em cerca de 2 min** (Kali desligado às 15:17; problema `High` às 15:19:21). Ver [passo 7](docs/07-gatilho-host-fora-do-ar.md) |
 
 Evidências com prints em [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.md) e [`docs/05-zabbix-vlan30.md`](docs/05-zabbix-vlan30.md).
 
@@ -138,7 +138,7 @@ Build a VLAN-segmented network controlled by an OPNsense firewall and monitored 
 | Ping VLAN 20 → internet (`8.8.8.8`) | Success (via NAT) | Success: 3/3 replies, 0% loss (~38 ms) |
 | Ping VLAN 20 → VLAN 30 | Blocked | Blocked: 100% loss (tested against `192.168.30.1` and `192.168.30.10`) |
 | Zabbix monitors OPNsense (agent at `192.168.30.1:10050`) | Green ZBX availability | Green ZBX, 108 items collected |
-| Zabbix detects powered-off host | Alert within 1 min | Pending: test planned for step 6 |
+| Zabbix detects powered-off host | Alert within 3 min | **Alerted in about 2 min** (Kali powered off at 15:17; `High` problem at 15:19:21). See [step 7](docs/07-gatilho-host-fora-do-ar.md) |
 
 Evidence with screenshots in [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.md) and [`docs/05-zabbix-vlan30.md`](docs/05-zabbix-vlan30.md).
 

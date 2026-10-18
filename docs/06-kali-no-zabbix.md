@@ -60,7 +60,7 @@ Caminho: **Data collection → Hosts → Create host**.
 | VLAN 30 alcança `192.168.20.108:10050` | Sim | **Sim** (`open`) |
 | Host `Kali` com ZBX verde no Zabbix | Sim | **Sim**, 70 itens coletados |
 | Coleta funciona com a VLAN 20 bloqueada para a VLAN 30 | Sim | **Sim**, sem nenhuma regra nova no firewall |
-| Alerta de host fora do ar | Em até 1 min | Pendente: próximo passo |
+| Alerta de host fora do ar | Em até 3 min | Testado no [passo 7](07-gatilho-host-fora-do-ar.md) |
 
 ### Problemas encontrados e soluções
 | Sintoma | Causa | Solução |
@@ -77,7 +77,7 @@ Caminho: **Data collection → Hosts → Create host**.
 - Hoje o agente escuta em `0.0.0.0`; restringir ao IP da VLAN 20 e manter `Server` apenas com o Zabbix.
 
 ### Próximo passo
-Criar o gatilho de "host fora do ar", desligar a VM do Kali e medir o tempo até o alerta.
+[07 · Gatilho de host fora do ar e teste de alerta](07-gatilho-host-fora-do-ar.md)
 
 ---
 
@@ -139,7 +139,7 @@ Path: **Data collection → Hosts → Create host**.
 | VLAN 30 reaches `192.168.20.108:10050` | Yes | **Yes** (`open`) |
 | Host `Kali` with green ZBX in Zabbix | Yes | **Yes**, 70 items collected |
 | Collection works with VLAN 20 blocked from VLAN 30 | Yes | **Yes**, with no new firewall rule |
-| Host-down alert | Within 1 min | Pending: next step |
+| Host-down alert | Within 3 min | Tested in [step 7](07-gatilho-host-fora-do-ar.md) |
 
 ### Issues found and fixes
 | Symptom | Cause | Fix |
@@ -156,4 +156,4 @@ Path: **Data collection → Hosts → Create host**.
 - The agent currently listens on `0.0.0.0`; restrict it to the VLAN 20 address and keep `Server` set only to the Zabbix.
 
 ### Next step
-Create the "host down" trigger, power off the Kali VM and measure the time until the alert.
+[07 · Host-down trigger and alert test](07-gatilho-host-fora-do-ar.md)
