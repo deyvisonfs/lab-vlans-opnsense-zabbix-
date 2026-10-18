@@ -74,7 +74,7 @@ Aqui não foi preciso forçar um teste: o disco do Kali já estava acima de 80% 
 | Horário em que notei a recuperação (15:42) diferente do registrado no Zabbix (15:40:33) | Eu só olhei a tela depois de alguns minutos | Usar o horário do Zabbix (**Recovery time**) como referência |
 
 ### Pontos de melhoria
-- Criar uma **ação** (Alerts → Actions) para notificar por e-mail ou mensageria quando um problema abrir. Hoje os alertas só aparecem no painel.
+- Notificar por mensageria quando um problema abrir: feito no [passo 9](09-notificacao-telegram.md), com o Telegram.
 - Liberar espaço no disco do Kali ou ajustar o limite do gatilho de espaço.
 - Para um alerta de CPU mais rápido em produção, reduzir a janela da média ou o limite, ao custo de mais alertas falsos.
 
@@ -152,6 +152,6 @@ No forced test was needed here: Kali's disk was already above 80% and the alert 
 | The time I noticed the recovery (15:42) differed from what Zabbix logged (15:40:33) | I only looked at the screen a few minutes later | Use Zabbix's time (**Recovery time**) as the reference |
 
 ### Improvements
-- Create an **action** (Alerts → Actions) to notify by e-mail or messaging when a problem opens. Today alerts only show on the dashboard.
+- Notify by messaging when a problem opens: done in [step 9](09-notificacao-telegram.md), with Telegram.
 - Free disk space on Kali or tune the space trigger threshold.
 - For a faster CPU alert in production, shorten the averaging window or lower the threshold, at the cost of more false alerts.

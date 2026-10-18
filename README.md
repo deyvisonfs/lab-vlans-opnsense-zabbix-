@@ -58,6 +58,7 @@ Montar uma rede segmentada em VLANs, controlada por um firewall OPNsense e monit
 | Zabbix detecta host desligado | Alerta em até 3 min | **Alertou em cerca de 2 min** (Kali desligado às 15:17; problema `High` às 15:19:21). Ver [passo 7](docs/07-gatilho-host-fora-do-ar.md) |
 | Zabbix alerta CPU alta (template do Linux, média > 90% por 5 min) | Alerta com a CPU saturada e resolução ao normalizar | **Alertou às 15:39:33** (carga iniciada às 15:33) e **resolveu às 15:40:33**. Ver [passo 8](docs/08-gatilhos-cpu-disco.md) |
 | Zabbix alerta pouco espaço em disco (`/` acima de 80%) | Alerta quando o uso passa de 80% | **Alerta ativo no Kali** (26,8 GB de disco), disparado pelo template sem configuração extra. Ver [passo 8](docs/08-gatilhos-cpu-disco.md) |
+| Zabbix notifica no Telegram (problema e resolução) | Mensagem ao abrir e ao resolver um problema | **Chegou nos dois casos**: problema às 18:13:33 e resolvido às 18:16:33, com mensagem no mesmo minuto. Ver [passo 9](docs/09-notificacao-telegram.md) |
 
 Evidências com prints em [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.md) e [`docs/05-zabbix-vlan30.md`](docs/05-zabbix-vlan30.md).
 
@@ -142,6 +143,7 @@ Build a VLAN-segmented network controlled by an OPNsense firewall and monitored 
 | Zabbix monitors OPNsense (agent at `192.168.30.1:10050`) | Green ZBX availability | Green ZBX, 108 items collected |
 | Zabbix detects powered-off host | Alert within 3 min | **Alerted in about 2 min** (Kali powered off at 15:17; `High` problem at 15:19:21). See [step 7](docs/07-gatilho-host-fora-do-ar.md) |
 | Zabbix alerts on high CPU (Linux template, average > 90% for 5 min) | Alert when CPU is saturated and resolve when it normalizes | **Alerted at 15:39:33** (load started at 15:33) and **resolved at 15:40:33**. See [step 8](docs/08-gatilhos-cpu-disco.md) |
+| Zabbix notifies on Telegram (problem and recovery) | Message when a problem opens and resolves | **Arrived in both cases**: problem at 18:13:33 and resolved at 18:16:33, with a message in the same minute. See [step 9](docs/09-notificacao-telegram.md) |
 | Zabbix alerts on low disk space (`/` above 80%) | Alert when usage goes over 80% | **Active alert on Kali** (26.8 GB disk), raised by the template with no extra configuration. See [step 8](docs/08-gatilhos-cpu-disco.md) |
 
 Evidence with screenshots in [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.md) and [`docs/05-zabbix-vlan30.md`](docs/05-zabbix-vlan30.md).
