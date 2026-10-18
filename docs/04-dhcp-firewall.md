@@ -49,7 +49,7 @@ ip -4 addr show eth0.20
 ### 5. Validação
 | Teste | Esperado | Resultado obtido |
 |---|---|---|
-| Cliente recebe IP `192.168.20.x` na `eth0.20` | Sim | `[preencher: IP recebido]` |
+| Cliente recebe IP `192.168.20.x` na `eth0.20` | Sim | **Recebeu** `192.168.20.108/24` por DHCP (`dynamic`, lease de ~24 h) |
 | `ping -c 3 192.168.20.1` (gateway da VLAN 20) | Responde | **Respondeu** (3/3, 0% de perda, ~1,4 ms) |
 | `ping -c 3 8.8.8.8` (internet, via NAT) | Responde | **Respondeu** (3/3, 0% de perda, ~38 ms) |
 | `ping -c 3 192.168.30.1` (VLAN 30, bloqueada) | Sem resposta | **Sem resposta** (100% de perda) |
@@ -121,7 +121,7 @@ ip -4 addr show eth0.20
 ### 5. Validation
 | Test | Expected | Actual |
 |---|---|---|
-| Client gets a `192.168.20.x` address on `eth0.20` | Yes | `[fill in: IP received]` |
+| Client gets a `192.168.20.x` address on `eth0.20` | Yes | **Received** `192.168.20.108/24` via DHCP (`dynamic`, ~24 h lease) |
 | `ping -c 3 192.168.20.1` (VLAN 20 gateway) | Replies | **Replied** (3/3, 0% loss, ~1.4 ms) |
 | `ping -c 3 8.8.8.8` (internet, via NAT) | Replies | **Replied** (3/3, 0% loss, ~38 ms) |
 | `ping -c 3 192.168.30.1` (VLAN 30, blocked) | No reply | **No reply** (100% loss) |
