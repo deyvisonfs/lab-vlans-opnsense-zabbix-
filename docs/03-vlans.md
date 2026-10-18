@@ -1,6 +1,6 @@
 # 03 · VLANs
 
-[← README](../README.md) · [← 02 OPNsense](02-opnsense.md)
+[← README](../README.md) · [← 02 OPNsense](02-opnsense.md) · [04 DHCP e firewall →](04-dhcp-firewall.md)
 
 ## 🇧🇷 Português
 
@@ -37,7 +37,7 @@ Criar as VLANs 10, 20 e 30 sobre a placa `em2` (tronco `lab-lan`) e atribuir a c
 | Erro "The device name prefix "vlan" is required" ao salvar a VLAN com o dispositivo `VLAN10` | O nome do dispositivo precisa começar com `vlan` em minúsculo | Usar `vlan10`, `vlan20` e `vlan30`; o sistema normalizou para `vlan010`, `vlan020` e `vlan030` |
 
 ### Próximo passo
-04 · DHCP e regras de firewall por VLAN (em construção).
+[04 · DHCP, firewall e testes](04-dhcp-firewall.md)
 
 ---
 
@@ -76,4 +76,4 @@ Create VLANs 10, 20 and 30 on the `em2` NIC (the `lab-lan` trunk) and assign eac
 | Error "The device name prefix "vlan" is required" when saving the VLAN with device `VLAN10` | The device name must start with a lowercase `vlan` | Use `vlan10`, `vlan20` and `vlan30`; the system normalized them to `vlan010`, `vlan020` and `vlan030` |
 
 ### Next step
-04 · DHCP and per-VLAN firewall rules (work in progress).
+[04 · DHCP, firewall and tests](04-dhcp-firewall.md)
