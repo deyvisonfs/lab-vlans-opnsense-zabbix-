@@ -56,7 +56,22 @@ ip -4 addr show eth0.20
 
 Conclusão: o DHCP da VLAN 20 funciona, o tráfego marcado (802.1Q) chega ao OPNsense, a saída para a internet funciona via NAT e a regra de bloqueio isola a VLAN de usuários da VLAN de servidores.
 
-> Prints: `docs/img/04-regras-firewall.png`, `docs/img/04-source-nat.png` e `docs/img/04-testes-kali.png` `[adicionar]`
+**Evidências**
+
+![Regras de firewall por VLAN](img/04-regras-firewall.png)
+*Regras por interface: ADMIN libera tudo, USUARIOS bloqueia a VLAN 30 antes de liberar o resto e SERVIDORES libera a saída.*
+
+![Source NAT automático](img/04-source-nat.png)
+*Source NAT em modo automático, com as redes das VLANs na origem.*
+
+![IP do cliente Kali na VLAN 20](img/04-kali-ip.png)
+*Kali com `192.168.20.108/24` na `eth0.20`, recebido por DHCP.*
+
+![Ping ao gateway da VLAN 20](img/04-kali-ping-gateway.png)
+*Ping ao gateway da VLAN 20 (`192.168.20.1`): 0% de perda.*
+
+![Ping à internet e bloqueio da VLAN 30](img/04-kali-ping-internet-bloqueio.png)
+*Ping à internet (`8.8.8.8`) responde; ping ao `192.168.30.1` (VLAN 30) sem resposta, 100% de perda.*
 
 ### Problemas encontrados e soluções
 | Sintoma | Causa | Solução |
@@ -128,7 +143,22 @@ ip -4 addr show eth0.20
 
 Conclusion: VLAN 20 DHCP works, tagged (802.1Q) traffic reaches OPNsense, internet access works through NAT and the block rule isolates the users VLAN from the servers VLAN.
 
-> Screenshots: `docs/img/04-regras-firewall.png`, `docs/img/04-source-nat.png` and `docs/img/04-testes-kali.png` `[add]`
+**Evidence**
+
+![Per-VLAN firewall rules](img/04-regras-firewall.png)
+*Per-interface rules: ADMIN allows everything, USUARIOS blocks VLAN 30 before allowing the rest and SERVIDORES allows outbound.*
+
+![Automatic Source NAT](img/04-source-nat.png)
+*Source NAT in automatic mode, with the VLAN networks as sources.*
+
+![Kali client IP on VLAN 20](img/04-kali-ip.png)
+*Kali with `192.168.20.108/24` on `eth0.20`, received via DHCP.*
+
+![Ping to the VLAN 20 gateway](img/04-kali-ping-gateway.png)
+*Ping to the VLAN 20 gateway (`192.168.20.1`): 0% loss.*
+
+![Internet ping and VLAN 30 block](img/04-kali-ping-internet-bloqueio.png)
+*Ping to the internet (`8.8.8.8`) replies; ping to `192.168.30.1` (VLAN 30) gets no reply, 100% loss.*
 
 ### Issues found and fixes
 | Symptom | Cause | Fix |

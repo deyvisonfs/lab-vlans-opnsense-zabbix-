@@ -29,7 +29,16 @@ Criar as VLANs 10, 20 e 30 sobre a placa `em2` (tronco `lab-lan`) e atribuir a c
 | Interfaces `opt3`, `opt4` e `opt5` ativas, com os IPs do plano | Sim | Sim, com status ativo (Interfaces → Overview) |
 | Rotas `192.168.10.0/24`, `192.168.20.0/24` e `192.168.30.0/24` criadas | Sim | Sim |
 
-> Prints: `docs/img/03-vlans-devices.png`, `docs/img/03-assignments.png` e `docs/img/03-overview.png` `[adicionar]`
+**Evidências**
+
+![VLANs criadas no OPNsense](img/03-vlans-devices.png)
+*VLANs 10, 20 e 30 criadas sobre a `em2`.*
+
+![Interfaces atribuídas](img/03-assignments.png)
+*Interfaces atribuídas: LAN, WAN, LabTrunk e as três VLANs, com os IPs do plano.*
+
+![Visão geral das interfaces](img/03-overview.png)
+*Interfaces → Overview: as três VLANs ativas e as rotas `192.168.10.0/24`, `192.168.20.0/24` e `192.168.30.0/24`.*
 
 ### Problemas encontrados e soluções
 | Sintoma | Causa | Solução |
@@ -68,7 +77,16 @@ Create VLANs 10, 20 and 30 on the `em2` NIC (the `lab-lan` trunk) and assign eac
 | Interfaces `opt3`, `opt4` and `opt5` up, with the planned IPs | Yes | Yes, status up (Interfaces → Overview) |
 | Routes `192.168.10.0/24`, `192.168.20.0/24` and `192.168.30.0/24` created | Yes | Yes |
 
-> Screenshots: `docs/img/03-vlans-devices.png`, `docs/img/03-assignments.png` and `docs/img/03-overview.png` `[add]`
+**Evidence**
+
+![VLANs created on OPNsense](img/03-vlans-devices.png)
+*VLANs 10, 20 and 30 created on `em2`.*
+
+![Assigned interfaces](img/03-assignments.png)
+*Assigned interfaces: LAN, WAN, LabTrunk and the three VLANs, with the planned IPs.*
+
+![Interfaces overview](img/03-overview.png)
+*Interfaces → Overview: the three VLANs up and the routes `192.168.10.0/24`, `192.168.20.0/24` and `192.168.30.0/24`.*
 
 ### Issues found and fixes
 | Symptom | Cause | Fix |

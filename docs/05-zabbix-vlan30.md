@@ -86,7 +86,22 @@ O serviço `zabbix_agentd` aparece rodando em **System → Diagnostics → Servi
 | Kali (VLAN 20): `ping 192.168.30.10` | Sem resposta | **Sem resposta** (100% de perda): a regra de bloqueio isola a VLAN 20 |
 | Host OPNsense com ZBX verde no Zabbix | Sim | **Sim**, com 108 itens em *Latest data* |
 
-> Prints: `docs/img/05-rede-zabbix.png`, `docs/img/05-agente-opnsense.png` e `docs/img/05-host-opnsense.png` `[adicionar]`
+**Evidências**
+
+![Rede do Zabbix na VLAN 30](img/05-rede-zabbix.png)
+*Zabbix: `enp0s3.30` com `192.168.30.10/24`; gateway e internet respondendo.*
+
+![Interface de gerência Host-Only](img/05-rede-zabbix-gerencia.png)
+*Interface de gerência `enp0s8` com `192.168.56.10/24` (Host-Only).*
+
+![Agente Zabbix no OPNsense](img/05-agente-opnsense.png)
+*Agente Zabbix no OPNsense (Services → Zabbix Agent → Settings).*
+
+![Host OPNsense no Zabbix](img/05-host-opnsense.png)
+*Host OPNsense com a disponibilidade ZBX verde em `192.168.30.1:10050`.*
+
+![Bloqueio do Kali para o Zabbix](img/05-kali-bloqueio-zabbix.png)
+*Do Kali (VLAN 20), o ping para o Zabbix (`192.168.30.10`) não responde: a VLAN 20 não alcança a VLAN 30.*
 
 ### Problemas encontrados e soluções
 | Sintoma | Causa | Solução |
@@ -190,7 +205,22 @@ The `zabbix_agentd` service shows as running in **System → Diagnostics → Ser
 | Kali (VLAN 20): `ping 192.168.30.10` | No reply | **No reply** (100% loss): the block rule isolates VLAN 20 |
 | OPNsense host with green ZBX in Zabbix | Yes | **Yes**, with 108 items in *Latest data* |
 
-> Screenshots: `docs/img/05-rede-zabbix.png`, `docs/img/05-agente-opnsense.png` and `docs/img/05-host-opnsense.png` `[add]`
+**Evidence**
+
+![Zabbix network on VLAN 30](img/05-rede-zabbix.png)
+*Zabbix: `enp0s3.30` with `192.168.30.10/24`; gateway and internet replying.*
+
+![Host-Only management interface](img/05-rede-zabbix-gerencia.png)
+*Management interface `enp0s8` with `192.168.56.10/24` (Host-Only).*
+
+![Zabbix agent on OPNsense](img/05-agente-opnsense.png)
+*Zabbix agent on OPNsense (Services → Zabbix Agent → Settings).*
+
+![OPNsense host in Zabbix](img/05-host-opnsense.png)
+*OPNsense host with green ZBX availability at `192.168.30.1:10050`.*
+
+![Kali blocked from Zabbix](img/05-kali-bloqueio-zabbix.png)
+*From Kali (VLAN 20), ping to Zabbix (`192.168.30.10`) gets no reply: VLAN 20 cannot reach VLAN 30.*
 
 ### Issues found and fixes
 | Symptom | Cause | Fix |

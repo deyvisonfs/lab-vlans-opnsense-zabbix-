@@ -20,23 +20,12 @@ Montar uma rede segmentada em VLANs, controlada por um firewall OPNsense e monit
 | Item | Valor |
 |---|---|
 | Virtualização | VirtualBox `[versão]` |
-| Firewall | OPNsense `[26.7.7]` |
-| Monitoramento | Zabbix `[7]` |
+| Firewall | OPNsense 26.7.7 |
+| Monitoramento | Zabbix 6.4.21 (Docker Compose) |
 | Clientes de teste | `[ex.: Windows Server, Linux, PC cliente]` |
 
 ### Topologia
-> Insira aqui a imagem do diagrama: `docs/topologia.png`
-
-```
-Internet ── OPNsense (WAN)
-               │
-           OPNsense (LAN trunk)
-               │
-            Switch (802.1Q)
-        ┌──────┼───────┐
-     VLAN 10  VLAN 20  VLAN 30
-     Admin    Usuários Servidores
-```
+![Topologia do lab / Lab topology](docs/img/topologia.svg)
 
 ### Plano de endereçamento (sugestão, ajuste ao seu lab)
 | VLAN | Nome | Rede | Gateway | DHCP |
@@ -76,7 +65,7 @@ Internet ── OPNsense (WAN)
 `[preencher ao final]`
 
 ### Autor
-Deyvison Ferreira da Silva · Recife, PE · `[link do LinkedIn]`
+Deyvison Ferreira da Silva · Recife, PE · [LinkedIn](https://www.linkedin.com/in/deyvisonfsilva/)
 
 ---
 
@@ -96,12 +85,12 @@ Build a VLAN-segmented network controlled by an OPNsense firewall and monitored 
 | Item | Value |
 |---|---|
 | Virtualization | VirtualBox `[version]` |
-| Firewall | OPNsense `[version]` |
-| Monitoring | Zabbix `[version]` |
+| Firewall | OPNsense 26.7.7 |
+| Monitoring | Zabbix 6.4.21 (Docker Compose) |
 | Test clients | `[e.g., Windows Server, Linux, client PC]` |
 
 ### Topology
-> Add the diagram image here: `docs/topology.png`
+![Lab topology](docs/img/topologia.svg)
 
 ### Addressing plan (suggested, adjust to your lab)
 | VLAN | Name | Network | Gateway | DHCP |
@@ -139,4 +128,4 @@ Build a VLAN-segmented network controlled by an OPNsense firewall and monitored 
 `[fill in at the end]`
 
 ### Author
-Deyvison Ferreira da Silva · Recife, Brazil · `[LinkedIn link]`
+Deyvison Ferreira da Silva · Recife, Brazil · [LinkedIn](https://www.linkedin.com/in/deyvisonfsilva/)
