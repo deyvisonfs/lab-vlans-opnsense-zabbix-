@@ -117,7 +117,7 @@ O serviço `zabbix_agentd` aparece rodando em **System → Diagnostics → Servi
 - Adicionar o Kali (VLAN 20) como host monitorado: o Zabbix, na VLAN 30, inicia a conexão, que a regra libera, mesmo com a VLAN 20 bloqueada para a VLAN 30.
 
 ### Próximo passo
-06 · Cadastrar o Kali no Zabbix e criar um gatilho de "host fora do ar", com o teste de alerta ao desligar a VM.
+[06 · Kali (VLAN 20) monitorado pelo Zabbix](06-kali-no-zabbix.md), depois o gatilho de "host fora do ar" com o teste de alerta ao desligar a VM.
 
 ---
 
@@ -236,4 +236,4 @@ The `zabbix_agentd` service shows as running in **System → Diagnostics → Ser
 - Add Kali (VLAN 20) as a monitored host: Zabbix, on VLAN 30, initiates the connection, which the rule allows, even though VLAN 20 is blocked from VLAN 30.
 
 ### Next step
-06 · Register Kali in Zabbix and create a "host down" trigger, testing the alert by powering off the VM.
+[06 · Kali (VLAN 20) monitored by Zabbix](06-kali-no-zabbix.md), then the "host down" trigger with the alert test by powering off the VM.
