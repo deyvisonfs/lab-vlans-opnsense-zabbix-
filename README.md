@@ -13,7 +13,8 @@ Montar uma rede segmentada em VLANs, controlada por um firewall OPNsense e monit
 - Segmentação de rede com VLANs (802.1Q) e roteamento entre VLANs
 - Regras de firewall por segmento (princípio do menor privilégio)
 - DHCP e DNS por VLAN
-- Monitoramento de hosts e serviços com Zabbix (itens, triggers e alertas)
+- Monitoramento de hosts e serviços com Zabbix (itens, triggers e alertas) com notificação no Telegram
+- Acesso administrativo seguro por VPN WireGuard configurada no próprio firewall
 - Troubleshooting e validação documentados
 
 ### Ambiente
@@ -43,7 +44,9 @@ Montar uma rede segmentada em VLANs, controlada por um firewall OPNsense e monit
 6. **Instalar o Zabbix Server** (VM na VLAN 30)
 7. **Instalar o Zabbix Agent** nos hosts e cadastrá-los
 8. **Criar triggers e alertas** (host fora do ar, uso de CPU, disco)
-9. **Validar** (ping, traceroute, testes de bloqueio e de alerta)
+9. **Notificar no Telegram** quando um problema abre e resolve
+10. **VPN WireGuard** no OPNsense: túnel da VLAN ADMIN até a VLAN de Servidores
+11. **Validar** (ping, traceroute, testes de bloqueio, de alerta e do túnel)
 
 > Cada passo terá sua página em `docs/` com comandos, prints e observações.
 
@@ -59,6 +62,8 @@ Montar uma rede segmentada em VLANs, controlada por um firewall OPNsense e monit
 | Zabbix alerta CPU alta (template do Linux, média > 90% por 5 min) | Alerta com a CPU saturada e resolução ao normalizar | **Alertou às 15:39:33** (carga iniciada às 15:33) e **resolveu às 15:40:33**. Ver [passo 8](docs/08-gatilhos-cpu-disco.md) |
 | Zabbix alerta pouco espaço em disco (`/` acima de 80%) | Alerta quando o uso passa de 80% | **Alerta ativo no Kali** (26,8 GB de disco), disparado pelo template sem configuração extra. Ver [passo 8](docs/08-gatilhos-cpu-disco.md) |
 | Zabbix notifica no Telegram (problema e resolução) | Mensagem ao abrir e ao resolver um problema | **Chegou nos dois casos**: problema às 18:13:33 e resolvido às 18:16:33, com mensagem no mesmo minuto. Ver [passo 9](docs/09-notificacao-telegram.md) |
+| Túnel WireGuard Kali (VLAN 10) ↔ OPNsense | Peer ativo com handshake | **Estabelecido**: peer verde no Status do OPNsense, handshake de segundos. Ver [passo 10](docs/10-wireguard-admin-servidores.md) |
+| Ping ao OPNsense (`10.10.10.1`) e à VLAN 30 (`192.168.30.1`) pelo túnel | Sucesso | **Sucesso**: 3/3 nos dois, 0% de perda; `ip route get` mostra `dev wg0` |
 
 Evidências com prints em [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.md) e [`docs/05-zabbix-vlan30.md`](docs/05-zabbix-vlan30.md).
 
@@ -73,6 +78,9 @@ Evidências com prints em [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.md)
 | `modprobe: Module 8201q not found` no Debian | Erro de digitação: o módulo é `8021q` | Repetir o comando com o nome correto |
 | `/etc/resolv.conf` com o texto `nameserver 1.1.1.1/nnameserver 8.8.8.8/n` | No `printf` foi usada a barra normal (`/n`) em vez da invertida (`\n`) | Regravar com `\n` e conferir com `cat` |
 | Host do OPNsense com ZBX vermelho no Zabbix | O host foi criado com a interface padrão `127.0.0.1` (dentro do container, o próprio servidor) e, depois, o IP foi digitado no campo **DNS name** | Colocar `192.168.30.1` no campo **IP address** e deixar **DNS name** vazio |
+| WireGuard: peer vermelho e `0 B received` | Chave pública do servidor errada no `wg0.conf` do cliente | Copiar a chave da instância `wg-admin` e subir o túnel de novo. Veja [passo 10](docs/10-wireguard-admin-servidores.md) |
+| WireGuard: `Required key not available` no ping | `AllowedIPs` do cliente sem a rede do túnel (`10.10.10.0/24`) | Incluir a rede do túnel no `AllowedIPs` |
+| Regra de firewall criada e sem efeito | Faltou clicar em **Apply changes** | Aplicar as mudanças depois de salvar a regra |
 
 Os detalhes de cada passo estão nas páginas de [`docs/`](docs/).
 
@@ -83,6 +91,9 @@ Os detalhes de cada passo estão nas páginas de [`docs/`](docs/).
 - Testar o que deve falhar é tão importante quanto testar o que deve funcionar: o ping bloqueado da VLAN 20 para a VLAN 30 é a prova da segmentação.
 - No Zabbix em Docker, `127.0.0.1` no cadastro do host aponta para o próprio container. O agente vê como origem o IP do host Docker (`192.168.30.10`), e é esse IP que vai na lista de servidores permitidos.
 - Erros pequenos de digitação (`8201q`, `/n`) são comuns; conferir a saída dos comandos (`cat`, `ip -br addr`, `ping`) antes de seguir evita perder tempo mais adiante.
+- No WireGuard, `AllowedIPs` é ao mesmo tempo a **rota** e o **filtro** do que pode ir pelo túnel. Se o destino não está nele, o pacote nem sai (`Required key not available`).
+- O tráfego que sai do túnel é filtrado na aba **WireGuard (Group)** do OPNsense: handshake feito não significa acesso liberado. E regra de firewall só vale depois de **Apply changes**.
+- Chave pública errada não dá erro visível: o OPNsense ignora o pacote em silêncio. O sintoma é `0 B received` e peer vermelho, e a conferência é comparar as chaves dos dois lados.
 - Documentar os erros reais, com sintoma, causa e solução, torna o lab reproduzível e mostra o raciocínio de troubleshooting.
 
 ### Autor
@@ -99,7 +110,8 @@ Build a VLAN-segmented network controlled by an OPNsense firewall and monitored 
 - Network segmentation with VLANs (802.1Q) and inter-VLAN routing
 - Per-segment firewall rules (least privilege)
 - DHCP and DNS per VLAN
-- Host and service monitoring with Zabbix (items, triggers, alerts)
+- Host and service monitoring with Zabbix (items, triggers, alerts) with Telegram notifications
+- Secure administrative access through a WireGuard VPN configured on the firewall itself
 - Documented troubleshooting and validation
 
 ### Environment
@@ -129,7 +141,9 @@ Build a VLAN-segmented network controlled by an OPNsense firewall and monitored 
 6. **Install Zabbix Server** (VM on VLAN 30)
 7. **Install Zabbix Agent** on hosts and register them
 8. **Create triggers and alerts** (host down, CPU, disk usage)
-9. **Validate** (ping, traceroute, block and alert tests)
+9. **Notify on Telegram** when a problem opens and resolves
+10. **WireGuard VPN** on OPNsense: tunnel from the ADMIN VLAN to the Servers VLAN
+11. **Validate** (ping, traceroute, block, alert and tunnel tests)
 
 > Each step will have its own page under `docs/` with commands, screenshots and notes.
 
@@ -145,6 +159,8 @@ Build a VLAN-segmented network controlled by an OPNsense firewall and monitored 
 | Zabbix alerts on high CPU (Linux template, average > 90% for 5 min) | Alert when CPU is saturated and resolve when it normalizes | **Alerted at 15:39:33** (load started at 15:33) and **resolved at 15:40:33**. See [step 8](docs/08-gatilhos-cpu-disco.md) |
 | Zabbix alerts on low disk space (`/` above 80%) | Alert when usage goes over 80% | **Active alert on Kali** (26.8 GB disk), raised by the template with no extra configuration. See [step 8](docs/08-gatilhos-cpu-disco.md) |
 | Zabbix notifies on Telegram (problem and recovery) | Message when a problem opens and resolves | **Arrived in both cases**: problem at 18:13:33 and resolved at 18:16:33, with a message in the same minute. See [step 9](docs/09-notificacao-telegram.md) |
+| WireGuard tunnel Kali (VLAN 10) ↔ OPNsense | Active peer with handshake | **Established**: green peer in OPNsense Status, handshake of seconds. See [step 10](docs/10-wireguard-admin-servidores.md) |
+| Ping OPNsense (`10.10.10.1`) and VLAN 30 (`192.168.30.1`) through the tunnel | Success | **Success**: 3/3 on both, 0% loss; `ip route get` shows `dev wg0` |
 
 Evidence with screenshots in [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.md) and [`docs/05-zabbix-vlan30.md`](docs/05-zabbix-vlan30.md).
 
@@ -159,6 +175,9 @@ Evidence with screenshots in [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.
 | `modprobe: Module 8201q not found` on Debian | Typo: the module is `8021q` | Re-run the command with the correct name |
 | `/etc/resolv.conf` containing the text `nameserver 1.1.1.1/nnameserver 8.8.8.8/n` | `printf` was typed with a forward slash (`/n`) instead of a backslash (`\n`) | Rewrite it with `\n` and check with `cat` |
 | OPNsense host with red ZBX in Zabbix | The host was created with the default interface `127.0.0.1` (inside the container, the server itself) and, later, the IP was typed in the **DNS name** field | Put `192.168.30.1` in **IP address** and leave **DNS name** empty |
+| WireGuard: red peer and `0 B received` | Wrong server public key in the client's `wg0.conf` | Copy the `wg-admin` instance key and bring the tunnel up again. See [step 10](docs/10-wireguard-admin-servidores.md) |
+| WireGuard: `Required key not available` on ping | Client `AllowedIPs` missing the tunnel network (`10.10.10.0/24`) | Add the tunnel network to `AllowedIPs` |
+| Firewall rule created but with no effect | **Apply changes** was never clicked | Apply the changes after saving the rule |
 
 Details of each step are in the [`docs/`](docs/) pages.
 
@@ -169,6 +188,9 @@ Details of each step are in the [`docs/`](docs/) pages.
 - Testing what must fail is as important as testing what must work: the blocked ping from VLAN 20 to VLAN 30 is the proof of segmentation.
 - With Zabbix in Docker, `127.0.0.1` in the host entry points to the container itself. The agent sees the Docker host's IP (`192.168.30.10`) as the source, and that is the IP that goes in the allowed servers list.
 - Small typing mistakes (`8201q`, `/n`) are common; checking command output (`cat`, `ip -br addr`, `ping`) before moving on saves time later.
+- In WireGuard, `AllowedIPs` is both the **route** and the **filter** for what may go through the tunnel. If the destination is not in it, the packet never leaves (`Required key not available`).
+- Traffic coming out of the tunnel is filtered on OPNsense's **WireGuard (Group)** tab: a finished handshake does not mean access is allowed. And a firewall rule only takes effect after **Apply changes**.
+- A wrong public key gives no visible error: OPNsense silently ignores the packet. The symptom is `0 B received` and a red peer, and the check is comparing the keys on both sides.
 - Documenting real errors, with symptom, cause and fix, makes the lab reproducible and shows troubleshooting reasoning.
 
 ### Author

@@ -91,7 +91,7 @@ Depois do `pkill yes`:
 - Guardar o token em uma macro secreta do Zabbix em vez de deixá-lo no campo do tipo de mídia.
 
 ### Próximo passo
-Túnel WireGuard entre a VLAN ADMIN e a VLAN SERVIDORES, no OPNsense.
+[10 · VPN WireGuard: ADMIN → Servidores](10-wireguard-admin-servidores.md)
 
 ---
 
@@ -184,4 +184,4 @@ After `pkill yes`:
 - Keep the token in a Zabbix secret macro instead of the media type field.
 
 ### Next step
-WireGuard tunnel between the ADMIN VLAN and the SERVERS VLAN, on OPNsense.
+[10 · WireGuard VPN: ADMIN → Servers](10-wireguard-admin-servidores.md)
