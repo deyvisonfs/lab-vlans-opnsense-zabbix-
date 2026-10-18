@@ -16,9 +16,9 @@ VirtualBox · versão `[preencher]`
 | cli-user | Cliente de teste (Usuário) | `[SO]` | `[ ]` | `[ ]` | `[ ]` | 20 |
 
 ### Redes virtuais
-- `fw-opnsense`: adaptador 1 em **NAT** (WAN) e adaptador 2 em **Rede Interna** `lab-lan` (LAN)
-- Demais VMs: adaptador em **Rede Interna** `lab-lan`
-- Detalhes em [02 · OPNsense](02-opnsense.md)
+- `OPNsense`: adaptador 1 em **Host-Only** `vboxnet0` (LAN/gerência, 192.168.56.2/24), adaptador 2 em **Bridge** (WAN, DHCP) e adaptador 3 em **Rede Interna** `lab-lan` (tronco das VLANs)
+- VMs do lab (clientes e Zabbix): adaptador em **Rede Interna** `lab-lan`, na VLAN correspondente
+- Detalhes em [02 · OPNsense](02-opnsense.md) e [03 · VLANs](03-vlans.md)
 
 ### Requisitos do computador host
 `[preencher: CPU, RAM total, espaço em disco]`
@@ -42,9 +42,9 @@ VirtualBox · version `[fill in]`
 | cli-user | Test client (User) | `[OS]` | `[ ]` | `[ ]` | `[ ]` | 20 |
 
 ### Virtual networks
-- `fw-opnsense`: adapter 1 on **NAT** (WAN) and adapter 2 on **Internal Network** `lab-lan` (LAN)
-- Other VMs: adapter on **Internal Network** `lab-lan`
-- Details in [02 · OPNsense](02-opnsense.md)
+- `OPNsense`: adapter 1 on **Host-Only** `vboxnet0` (LAN/management, 192.168.56.2/24), adapter 2 on **Bridge** (WAN, DHCP) and adapter 3 on **Internal Network** `lab-lan` (VLAN trunk)
+- Lab VMs (clients and Zabbix): adapter on **Internal Network** `lab-lan`, on the matching VLAN
+- Details in [02 · OPNsense](02-opnsense.md) and [03 · VLANs](03-vlans.md)
 
 ### Host machine requirements
 `[fill in: CPU, total RAM, disk space]`
