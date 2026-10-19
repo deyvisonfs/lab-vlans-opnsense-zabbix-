@@ -82,10 +82,9 @@ Depois do `pkill yes`:
 | O `/start` só mostrava a lista de comandos | A conversa aberta era a do **BotFather**, não a do bot criado | Abrir o chat do próprio bot (`@nome_do_bot`) e enviar a mensagem lá |
 | `getUpdates` com `"result": []` | O bot ainda não tinha recebido nenhuma mensagem | Enviar uma mensagem ao bot e atualizar a página |
 | Token do bot apareceu em um print | Print tirado do BotFather com o token visível | Revogar com `/revoke` no BotFather, usar o token novo e não publicar prints com ele |
-| Cada mensagem chega **duas vezes** | O Zabbix já traz a ação `Report problems to Zabbix administrators`, e o `Admin` (que está nesse grupo) agora recebe também pelo Telegram | Desativar a ação padrão em **Alerts → Actions → Trigger actions** (selecionar e **Disable**) |
+| Cada mensagem chega **duas vezes** | O Zabbix já traz a ação `Report problems to Zabbix administrators`, e o `Admin` (que está nesse grupo) agora recebe também pelo Telegram | **Resolvido:** ação padrão desativada em **Alerts → Actions → Trigger actions** (selecionar e **Disable**); ficou só a ação `Notificar problemas no Telegram` |
 
 ### Pontos de melhoria
-- Desativar a ação padrão para acabar com as mensagens duplicadas.
 - Usar um **grupo do Telegram** com o bot, para notificar mais de uma pessoa, em vez de um chat privado.
 - Escalar por severidade: `High` e `Disaster` com mensagem a mais pessoas ou repetição.
 - Guardar o token em uma macro secreta do Zabbix em vez de deixá-lo no campo do tipo de mídia.
@@ -175,10 +174,9 @@ After `pkill yes`:
 | `/start` only showed the command list | The open conversation was **BotFather's**, not the created bot's | Open the bot's own chat (`@bot_name`) and send the message there |
 | `getUpdates` with `"result": []` | The bot had not received any message yet | Send a message to the bot and refresh the page |
 | The bot token showed up in a screenshot | Screenshot of BotFather with the token visible | Revoke with `/revoke` in BotFather, use the new token and do not publish screenshots with it |
-| Every message arrives **twice** | Zabbix ships with the `Report problems to Zabbix administrators` action, and `Admin` (in that group) now also receives via Telegram | Disable the default action under **Alerts → Actions → Trigger actions** (select and **Disable**) |
+| Every message arrives **twice** | Zabbix ships with the `Report problems to Zabbix administrators` action, and `Admin` (in that group) now also receives via Telegram | **Fixed:** default action disabled under **Alerts → Actions → Trigger actions** (select and **Disable**); only the `Notificar problemas no Telegram` action is left |
 
 ### Improvements
-- Disable the default action to stop the duplicate messages.
 - Use a **Telegram group** with the bot to notify more than one person, instead of a private chat.
 - Escalate by severity: `High` and `Disaster` messaging more people or repeating.
 - Keep the token in a Zabbix secret macro instead of the media type field.
