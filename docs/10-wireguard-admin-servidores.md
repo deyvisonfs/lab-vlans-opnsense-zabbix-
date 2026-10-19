@@ -131,11 +131,20 @@ sudo wg show
 ![wg show após o bloqueio](img/10-tunel-wg-show-apos-bloqueio.png)
 *`sudo wg show`: handshake recente e tráfego nos dois sentidos.*
 
+**Como saber por onde o pacote vai.** O `ping` só mostra o destino e a resposta; quem escolhe o caminho é a tabela de rotas. Dois comandos deixam isso explícito:
+```bash
+ip route get 192.168.30.1          # dev wg0 = túnel; dev eth0.10 = direto pela VLAN 10
+ping -c 3 -I wg0 192.168.30.1      # força o ping pelo túnel
+```
+![Caminho do pacote](img/10-caminho-ip-route-ping-wg0.png)
+*`ip route get` mostra `dev wg0 src 10.10.10.2`, e o ping forçado pelo túnel sai de `10.10.10.2 wg0` e responde 3/3 (0% de perda). Com o `-I eth0.10` e sem a rota temporária o Kali responde `Destination Host Unreachable` por conta própria: não existe caminho direto a partir dele, o que é diferente do firewall descartando o pacote.*
+
 | Teste | Esperado | Resultado obtido |
 |---|---|---|
 | Ping direto VLAN 10 → VLAN 30 (`192.168.30.1`), sem túnel, com o Block aplicado | Bloqueado | **Bloqueado**: 100% de perda |
 | Ping à VLAN 30 pelo túnel, com o Block ativo | Sucesso | **Sucesso**: 3/3, 0% de perda |
 | Caminho do ping pelo túnel | `wg0` | **Sim**: `dev wg0 src 10.10.10.2` |
+| Ping forçado pelo túnel (`ping -I wg0`) | Sucesso, origem `10.10.10.2` | **Sucesso**: 3/3, `from 10.10.10.2 wg0` |
 
 O Block não atrapalha o túnel porque o tráfego do WireGuard sai cifrado, em UDP 51820, com destino `This Firewall`, e não casa com a regra da `vlan030`.
 
@@ -301,11 +310,20 @@ sudo wg show
 ![wg show after the block](img/10-tunel-wg-show-apos-bloqueio.png)
 *`sudo wg show`: recent handshake and traffic in both directions.*
 
+**How to tell which path a packet takes.** `ping` only shows the destination and the reply; the routing table picks the path. Two commands make it explicit:
+```bash
+ip route get 192.168.30.1          # dev wg0 = tunnel; dev eth0.10 = direct through VLAN 10
+ping -c 3 -I wg0 192.168.30.1      # forces the ping through the tunnel
+```
+![Packet path](img/10-caminho-ip-route-ping-wg0.png)
+*`ip route get` shows `dev wg0 src 10.10.10.2`, and the ping forced through the tunnel leaves from `10.10.10.2 wg0` and answers 3/3 (0% loss). With `-I eth0.10` and no temporary route, Kali itself answers `Destination Host Unreachable`: it has no direct path, which is different from the firewall dropping the packet.*
+
 | Test | Expected | Actual |
 |---|---|---|
 | Direct ping VLAN 10 → VLAN 30 (`192.168.30.1`), no tunnel, Block applied | Blocked | **Blocked**: 100% loss |
 | Ping to VLAN 30 through the tunnel, Block active | Success | **Success**: 3/3, 0% loss |
 | Path of the tunnel ping | `wg0` | **Yes**: `dev wg0 src 10.10.10.2` |
+| Ping forced through the tunnel (`ping -I wg0`) | Success, source `10.10.10.2` | **Success**: 3/3, `from 10.10.10.2 wg0` |
 
 The Block does not affect the tunnel because WireGuard traffic leaves encrypted, over UDP 51820, to `This Firewall`, and does not match the `vlan030` rule.
 
