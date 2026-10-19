@@ -83,7 +83,7 @@ Evidências com prints em [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.md)
 | WireGuard: peer vermelho e `0 B received` | Chave pública do servidor errada no `wg0.conf` do cliente | Copiar a chave da instância `wg-admin` e subir o túnel de novo. Veja [passo 10](docs/10-wireguard-admin-servidores.md) |
 | WireGuard: `Required key not available` no ping | `AllowedIPs` do cliente sem a rede do túnel (`10.10.10.0/24`) | Incluir a rede do túnel no `AllowedIPs` |
 | Regra de firewall criada e sem efeito | Faltou clicar em **Apply changes** | Aplicar as mudanças depois de salvar a regra |
-| Regra Block correta, mas o ping direto ainda passava | Mudança ainda não carregada e/ou estado de conexão antigo | **Apply changes** e **Reset states** (Firewall → Diagnostics → States) |
+| Regra Block correta e aplicada, mas o ping direto ainda passava | Estado de conexão antigo (o firewall é *stateful*) | **Reset states** (Firewall → Diagnostics → States) |
 
 Os detalhes de cada passo estão nas páginas de [`docs/`](docs/).
 
@@ -96,7 +96,7 @@ Os detalhes de cada passo estão nas páginas de [`docs/`](docs/).
 - Erros pequenos de digitação (`8201q`, `/n`) são comuns; conferir a saída dos comandos (`cat`, `ip -br addr`, `ping`) antes de seguir evita perder tempo mais adiante.
 - No WireGuard, `AllowedIPs` é ao mesmo tempo a **rota** e o **filtro** do que pode ir pelo túnel. Se o destino não está nele, o pacote nem sai (`Required key not available`).
 - O tráfego que sai do túnel é filtrado na aba **WireGuard (Group)** do OPNsense: handshake feito não significa acesso liberado. E regra de firewall só vale depois de **Apply changes**.
-- Para o acesso ser **só pela VPN**, não basta criar o túnel: é preciso bloquear o caminho direto, com o Block **acima** da regra geral. O teste com o túnel desligado (ping 100% perdido) e depois com ele ligado (ping respondendo) é a prova.
+- Para o acesso ser **só pela VPN**, não basta criar o túnel: é preciso bloquear o caminho direto, com o Block **acima** da regra geral, e limpar os estados antigos (**Reset states**) para a regra nova valer para conexões que já existiam. O teste com o túnel desligado (ping 100% perdido) e depois com ele ligado (ping respondendo) é a prova.
 - Chave pública errada não dá erro visível: o OPNsense ignora o pacote em silêncio. O sintoma é `0 B received` e peer vermelho, e a conferência é comparar as chaves dos dois lados.
 - Documentar os erros reais, com sintoma, causa e solução, torna o lab reproduzível e mostra o raciocínio de troubleshooting.
 
@@ -184,7 +184,7 @@ Evidence with screenshots in [`docs/04-dhcp-firewall.md`](docs/04-dhcp-firewall.
 | WireGuard: red peer and `0 B received` | Wrong server public key in the client's `wg0.conf` | Copy the `wg-admin` instance key and bring the tunnel up again. See [step 10](docs/10-wireguard-admin-servidores.md) |
 | WireGuard: `Required key not available` on ping | Client `AllowedIPs` missing the tunnel network (`10.10.10.0/24`) | Add the tunnel network to `AllowedIPs` |
 | Firewall rule created but with no effect | **Apply changes** was never clicked | Apply the changes after saving the rule |
-| Block rule correct, but the direct ping still went through | Change not yet loaded and/or an old connection state | **Apply changes** and **Reset states** (Firewall → Diagnostics → States) |
+| Block rule correct and applied, but the direct ping still went through | Old connection state (the firewall is *stateful*) | **Reset states** (Firewall → Diagnostics → States) |
 
 Details of each step are in the [`docs/`](docs/) pages.
 
@@ -197,7 +197,7 @@ Details of each step are in the [`docs/`](docs/) pages.
 - Small typing mistakes (`8201q`, `/n`) are common; checking command output (`cat`, `ip -br addr`, `ping`) before moving on saves time later.
 - In WireGuard, `AllowedIPs` is both the **route** and the **filter** for what may go through the tunnel. If the destination is not in it, the packet never leaves (`Required key not available`).
 - Traffic coming out of the tunnel is filtered on OPNsense's **WireGuard (Group)** tab: a finished handshake does not mean access is allowed. And a firewall rule only takes effect after **Apply changes**.
-- For access to be **VPN only**, creating the tunnel is not enough: the direct path must be blocked, with the Block **above** the general rule. The test with the tunnel off (ping 100% lost) and then on (ping answering) is the proof.
+- For access to be **VPN only**, creating the tunnel is not enough: the direct path must be blocked, with the Block **above** the general rule, and clearing old states (**Reset states**) so the new rule applies to connections that already existed. The test with the tunnel off (ping 100% lost) and then on (ping answering) is the proof.
 - A wrong public key gives no visible error: OPNsense silently ignores the packet. The symptom is `0 B received` and a red peer, and the check is comparing the keys on both sides.
 - Documenting real errors, with symptom, cause and fix, makes the lab reproducible and shows troubleshooting reasoning.
 

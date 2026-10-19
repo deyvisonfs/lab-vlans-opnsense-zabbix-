@@ -110,9 +110,9 @@ sudo ip route add 192.168.30.0/24 via 192.168.10.1 dev eth0.10
 ping -c 3 -I eth0.10 192.168.30.1
 ```
 ![Primeira tentativa](img/10-bloqueio-primeira-tentativa.png)
-*Primeira tentativa, com a regra Block criada mas ainda não carregada no firewall: o ping direto (origem `192.168.10.108`, `eth0.10`) ainda responde, 3/3. O `wg0 is not a WireGuard interface` só indica que o túnel já estava desligado.*
+*Primeira tentativa, com a regra Block já criada e aplicada, mas com estado de conexão antigo no firewall: o ping direto (origem `192.168.10.108`, `eth0.10`) ainda responde, 3/3. O `wg0 is not a WireGuard interface` só indica que o túnel já estava desligado.*
 
-Depois de **Apply changes** e **Reset states**:
+Depois de **Reset states** (Firewall → Diagnostics → States):
 
 ![Ping direto bloqueado](img/10-bloqueio-direto-100.png)
 *Ping direto pela VLAN 10: **100% de perda**, sem `Host Unreachable` (o pacote sai e o firewall o descarta).*
@@ -150,7 +150,7 @@ O Block não atrapalha o túnel porque o tráfego do WireGuard sai cifrado, em U
 | Ping com 100% de perda logo depois de `wg-quick up` | O primeiro pacote dispara o handshake; o ping terminou antes | Esperar alguns segundos e repetir |
 | `ping 192.168.30.1` funciona, `10.10.10.1` não | A regra do grupo cobria só `vlan030 net`; o `10.10.10.1` é do próprio firewall e não faz parte dessa rede | Regra `10.10.10.0/24 → This Firewall` |
 | Regra nova criada, mas sem efeito | Faltou o **Apply changes** | Aplicar; o ping passou na hora |
-| Regra Block criada e correta, mas o ping direto continuava com 0% de perda | A mudança ainda não estava carregada no firewall e/ou havia estado de conexão antigo | **Apply changes** e **Firewall → Diagnostics → States → Reset states**; depois o ping direto deu 100% de perda |
+| Regra Block criada, correta e **já aplicada**, mas o ping direto continuava com 0% de perda | Estado de conexão antigo: o firewall é *stateful* e continua liberando o que já tinha estado aberto antes da regra | **Firewall → Diagnostics → States → Reset states**; depois o ping direto deu 100% de perda |
 | `wg-quick: 'wg0' is not a WireGuard interface` | O túnel já estava desligado (por exemplo, depois de reiniciar o Kali) | Só aviso; conferir com `sudo wg show` e `ip route get 192.168.30.1` se o caminho é `wg0` ou `eth0.10` |
 | `sudo: unable to resolve host kali` | Hostname sem entrada no `/etc/hosts` | Só aviso; ignorado |
 
@@ -280,9 +280,9 @@ sudo ip route add 192.168.30.0/24 via 192.168.10.1 dev eth0.10
 ping -c 3 -I eth0.10 192.168.30.1
 ```
 ![First attempt](img/10-bloqueio-primeira-tentativa.png)
-*First attempt, with the Block rule created but not yet loaded in the firewall: the direct ping (source `192.168.10.108`, `eth0.10`) still answers, 3/3. `wg0 is not a WireGuard interface` just means the tunnel was already down.*
+*First attempt, with the Block rule already created and applied, but with an old connection state in the firewall: the direct ping (source `192.168.10.108`, `eth0.10`) still answers, 3/3. `wg0 is not a WireGuard interface` just means the tunnel was already down.*
 
-After **Apply changes** and **Reset states**:
+After **Reset states** (Firewall → Diagnostics → States):
 
 ![Direct ping blocked](img/10-bloqueio-direto-100.png)
 *Direct ping through VLAN 10: **100% loss**, no `Host Unreachable` (the packet leaves and the firewall drops it).*
@@ -320,7 +320,7 @@ The Block does not affect the tunnel because WireGuard traffic leaves encrypted,
 | 100% loss right after `wg-quick up` | The first packet triggers the handshake; the ping ended before it finished | Wait a few seconds and repeat |
 | `ping 192.168.30.1` works, `10.10.10.1` does not | The group rule covered only `vlan030 net`; `10.10.10.1` is the firewall itself, not part of that network | Rule `10.10.10.0/24 → This Firewall` |
 | New rule created but no effect | **Apply changes** was missing | Apply; the ping worked right away |
-| Block rule created and correct, but the direct ping still showed 0% loss | The change was not yet loaded in the firewall and/or an old connection state existed | **Apply changes** and **Firewall → Diagnostics → States → Reset states**; the direct ping then showed 100% loss |
+| Block rule created, correct and **already applied**, but the direct ping still showed 0% loss | Old connection state: the firewall is *stateful* and keeps allowing what already had a state open before the rule | **Firewall → Diagnostics → States → Reset states**; the direct ping then showed 100% loss |
 | `wg-quick: 'wg0' is not a WireGuard interface` | The tunnel was already down (for example, after rebooting Kali) | Only a warning; check with `sudo wg show` and `ip route get 192.168.30.1` whether the path is `wg0` or `eth0.10` |
 | `sudo: unable to resolve host kali` | Hostname has no `/etc/hosts` entry | Only a warning; ignored |
 
