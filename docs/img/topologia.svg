@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 700" width="920" height="700" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
   <title id="t">Topologia do lab / Lab topology</title>
-  <desc id="d">Internet, roteador de casa, OPNsense com WAN, gerência Host-Only e tronco lab-lan com as VLANs 10, 20 e 30. A VLAN 20 é bloqueada para a VLAN 30. Um túnel WireGuard liga a VLAN 10 à VLAN 30.</desc>
+  <desc id="d">Internet, roteador de casa, OPNsense com WAN, gerência Host-Only e tronco lab-lan com as VLANs 10, 20 e 30. As VLANs 20 e 10 são bloqueadas para a VLAN 30; só um túnel WireGuard liga a VLAN 10 à VLAN 30.</desc>
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="#cf222e"/>
@@ -55,7 +55,7 @@
   <text x="190" y="392" text-anchor="middle" font-size="14" font-weight="700" fill="#1a7f37">VLAN 10 · ADMIN</text>
   <text x="190" y="414" text-anchor="middle" font-size="12" fill="#24292f">192.168.10.0/24 · GW .1</text>
   <text x="190" y="434" text-anchor="middle" font-size="12" fill="#24292f">DHCP .100–.200</text>
-  <text x="190" y="454" text-anchor="middle" font-size="12" fill="#24292f">Rule: Pass → any</text>
+  <text x="190" y="454" text-anchor="middle" font-size="12" fill="#24292f">Rule: Block → VLAN 30, Pass → rest</text>
   <text x="190" y="474" text-anchor="middle" font-size="12" fill="#1a7f37">Kali (eth0.10) · WG client 10.10.10.2</text>
 
   <!-- VLAN 20 -->
@@ -79,7 +79,7 @@
 
   <!-- Túnel WireGuard VLAN 10 -> VLAN 30 -->
   <path d="M 150 492 Q 470 700 790 492" fill="none" stroke="#1a7f37" stroke-width="2.5" stroke-dasharray="2 0" marker-end="url(#arrg)"/>
-  <text x="470" y="634" text-anchor="middle" font-size="12" font-weight="600" fill="#1a7f37">✓ WireGuard tunnel · VLAN 10 → VLAN 30 allowed</text>
+  <text x="470" y="634" text-anchor="middle" font-size="12" font-weight="600" fill="#1a7f37">✓ WireGuard tunnel · the only path from VLAN 10 to VLAN 30</text>
   </g>
 
   <text x="460" y="682" text-anchor="middle" font-size="11" fill="#57606a">VirtualBox lab · Zabbix queries the OPNsense agent from VLAN 30 (port 10050)</text>

@@ -18,6 +18,8 @@ Para deixar o lab mais completo, adicionei uma **VPN WireGuard direto no OPNsens
 
 Fluxo: Kali (VLAN 10) → UDP 51820 → OPNsense → túnel `10.10.10.0/24` → regra do grupo WireGuard → VLAN 30.
 
+O acesso **direto** da VLAN 10 à VLAN 30 é bloqueado por uma regra no firewall: a única via é o túnel.
+
 > **Segurança:** as chaves **privadas** (a do Kali e a do OPNsense) nunca aparecem neste repositório; os prints as mostram como `(hidden)` e o arquivo de configuração usa `<CHAVE_PRIVADA_DO_KALI>`. As chaves **públicas** não são segredo.
 
 ### 1. Servidor no OPNsense
@@ -37,10 +39,11 @@ Caminho: **VPN → WireGuard**.
 | Onde | Ação | Origem | Destino | Para quê |
 |---|---|---|---|---|
 | **ADMIN** (`vlan010`) | Pass, UDP | `vlan010 net` | `This Firewall`, porta `51820` | Deixar o Kali chegar ao servidor WireGuard |
+| **ADMIN** (`vlan010`) | **Block** | `vlan010 net` | `vlan030 net` | Impedir o acesso direto à VLAN 30; precisa ficar **acima** da regra "Admin acessa tudo" |
 | **WireGuard (Group)** | Pass | `10.10.10.0/24` | `vlan030 net` | O que o túnel pode alcançar |
 | **WireGuard (Group)** | Pass | `10.10.10.0/24` | `This Firewall` | Testar o próprio túnel (`10.10.10.1`) |
 
-O tráfego que **sai do túnel** é filtrado na aba **WireGuard (Group)**. Sem regra ali, o OPNsense bloqueia tudo, mesmo com o handshake feito. **Apply changes** é obrigatório depois de salvar (ver problemas).
+As regras são lidas de cima para baixo e vale a primeira que combina, por isso o **Block** fica acima da "Admin acessa tudo". O tráfego que **sai do túnel** é filtrado na aba **WireGuard (Group)**. Sem regra ali, o OPNsense bloqueia tudo, mesmo com o handshake feito. **Apply changes** é obrigatório depois de salvar (ver problemas).
 
 ### 3. Cliente no Kali (VLAN 10)
 ```bash
@@ -91,6 +94,51 @@ sudo wg show
 | Ping à VLAN 30 (`192.168.30.1`) | Sucesso | **Sucesso**: 3/3, 0% de perda (~0,6 a 0,9 ms) |
 | Caminho até a VLAN 30 | Pelo `wg0` | **Sim**: `ip route get` → `dev wg0 src 10.10.10.2` |
 
+### 5. Só pela VPN: o acesso direto é bloqueado
+Para provar que o túnel é o único caminho, bloqueei a VLAN 10 → VLAN 30 e testei os dois caminhos. Antes da regra existir, o ping direto da VLAN 10 à VLAN 30 funcionava (3/3, com uma rota temporária pela `eth0.10`), porque a regra de acesso total da ADMIN o permitia.
+
+![Regras da ADMIN](img/10-regras-admin.png)
+*Regras da ADMIN, na ordem: **Block** `vlan010 network → vlan030 network` (descrição "Admin so acessa servidores pela VPN"), "Admin acessa tudo" e o Pass UDP 51820.*
+
+![Detalhe da regra Block](img/10-regra-block-detalhe.png)
+*Detalhe: ação **Block**, interface `vlan010`, direção `In`, protocolo `any`, origem `vlan010 network`, destino `vlan030 network`, `Quick` marcado.*
+
+Teste no Kali, **sem o túnel** e com uma rota temporária pela `eth0.10`, para forçar o caminho direto:
+```bash
+sudo wg-quick down wg0
+sudo ip route add 192.168.30.0/24 via 192.168.10.1 dev eth0.10
+ping -c 3 -I eth0.10 192.168.30.1
+```
+![Primeira tentativa](img/10-bloqueio-primeira-tentativa.png)
+*Primeira tentativa, com a regra Block criada mas ainda não carregada no firewall: o ping direto (origem `192.168.10.108`, `eth0.10`) ainda responde, 3/3. O `wg0 is not a WireGuard interface` só indica que o túnel já estava desligado.*
+
+Depois de **Apply changes** e **Reset states**:
+
+![Ping direto bloqueado](img/10-bloqueio-direto-100.png)
+*Ping direto pela VLAN 10: **100% de perda**, sem `Host Unreachable` (o pacote sai e o firewall o descarta).*
+
+Em seguida, remover a rota temporária e subir o túnel:
+```bash
+sudo ip route del 192.168.30.0/24
+sudo wg-quick up wg0
+ping -c 3 192.168.30.1
+ip route get 192.168.30.1
+sudo wg show
+```
+![Ping pelo túnel com o Block ativo](img/10-tunel-ping-rota.png)
+*Com o Block ativo, o ping pelo túnel responde 3/3 (0% de perda, ~0,4 a 1,7 ms) e `ip route get` mostra `dev wg0 src 10.10.10.2`.*
+
+![wg show após o bloqueio](img/10-tunel-wg-show-apos-bloqueio.png)
+*`sudo wg show`: handshake recente e tráfego nos dois sentidos.*
+
+| Teste | Esperado | Resultado obtido |
+|---|---|---|
+| Ping direto VLAN 10 → VLAN 30 (`192.168.30.1`), sem túnel, com o Block aplicado | Bloqueado | **Bloqueado**: 100% de perda |
+| Ping à VLAN 30 pelo túnel, com o Block ativo | Sucesso | **Sucesso**: 3/3, 0% de perda |
+| Caminho do ping pelo túnel | `wg0` | **Sim**: `dev wg0 src 10.10.10.2` |
+
+O Block não atrapalha o túnel porque o tráfego do WireGuard sai cifrado, em UDP 51820, com destino `This Firewall`, e não casa com a regra da `vlan030`.
+
 ### Problemas encontrados e soluções
 | Sintoma | Causa | Solução |
 |---|---|---|
@@ -102,6 +150,8 @@ sudo wg show
 | Ping com 100% de perda logo depois de `wg-quick up` | O primeiro pacote dispara o handshake; o ping terminou antes | Esperar alguns segundos e repetir |
 | `ping 192.168.30.1` funciona, `10.10.10.1` não | A regra do grupo cobria só `vlan030 net`; o `10.10.10.1` é do próprio firewall e não faz parte dessa rede | Regra `10.10.10.0/24 → This Firewall` |
 | Regra nova criada, mas sem efeito | Faltou o **Apply changes** | Aplicar; o ping passou na hora |
+| Regra Block criada e correta, mas o ping direto continuava com 0% de perda | A mudança ainda não estava carregada no firewall e/ou havia estado de conexão antigo | **Apply changes** e **Firewall → Diagnostics → States → Reset states**; depois o ping direto deu 100% de perda |
+| `wg-quick: 'wg0' is not a WireGuard interface` | O túnel já estava desligado (por exemplo, depois de reiniciar o Kali) | Só aviso; conferir com `sudo wg show` e `ip route get 192.168.30.1` se o caminho é `wg0` ou `eth0.10` |
 | `sudo: unable to resolve host kali` | Hostname sem entrada no `/etc/hosts` | Só aviso; ignorado |
 
 ![Peer vermelho no OPNsense](img/10-status-sem-handshake.png)
@@ -111,14 +161,14 @@ sudo wg show
 *`Required key not available`: o ping ao `10.10.10.1` não saía porque o `AllowedIPs` não incluía a rede do túnel.*
 
 ### Pontos de melhoria
-- **Bloquear VLAN 10 → VLAN 30 direto** e deixar o acesso só pelo túnel. Hoje a VLAN 10 também alcança a VLAN 30 sem VPN (regra de acesso total do ADMIN; testei com uma rota temporária, 3/3 respostas). O próximo passo é uma regra **Block** `vlan010 net → vlan030 net` acima dessa regra, mantendo o UDP 51820 liberado, e repetir o teste: direto bloqueado, pelo túnel liberado.
+- Ligar o **log** nas regras da ADMIN (Block e Pass) para ver o bloqueio no **Live View** e identificar a regra que decide cada pacote.
 - Restringir a regra do túnel a portas específicas (por exemplo SSH e a interface web do Zabbix) em vez de toda a VLAN 30.
 - Usar **pre-shared key** no peer e ativar o túnel no boot do Kali (`systemctl enable wg-quick@wg0`).
 - Abrir o Zabbix (`http://192.168.30.10`) pelo túnel e monitorar o `wg0` no Zabbix.
 - Reservar IP fixo para o Kali no Dnsmasq.
 
 ### Próximo passo
-Fechar o README e, em seguida, aplicar o bloqueio direto VLAN 10 → VLAN 30 para provar que só o túnel dá acesso.
+Com o acesso direto bloqueado e o acesso pelo túnel validado, o lab está completo. Voltar ao [README](../README.md).
 
 ---
 
@@ -137,6 +187,8 @@ To make the lab more complete, I added a **WireGuard VPN directly on OPNsense**,
 | Destination reached through the tunnel | VLAN 30 (`192.168.30.0/24`) |
 
 Flow: Kali (VLAN 10) → UDP 51820 → OPNsense → `10.10.10.0/24` tunnel → WireGuard group rule → VLAN 30.
+
+**Direct** access from VLAN 10 to VLAN 30 is blocked by a firewall rule: the tunnel is the only way in.
 
 > **Security:** the **private** keys (Kali's and OPNsense's) never appear in this repository; the screenshots show them as `(hidden)` and the config file uses `<KALI_PRIVATE_KEY>`. **Public** keys are not secret.
 
@@ -157,10 +209,11 @@ Path: **VPN → WireGuard**.
 | Where | Action | Source | Destination | Purpose |
 |---|---|---|---|---|
 | **ADMIN** (`vlan010`) | Pass, UDP | `vlan010 net` | `This Firewall`, port `51820` | Let Kali reach the WireGuard server |
+| **ADMIN** (`vlan010`) | **Block** | `vlan010 net` | `vlan030 net` | Stop direct access to VLAN 30; must sit **above** the "Admin acessa tudo" rule |
 | **WireGuard (Group)** | Pass | `10.10.10.0/24` | `vlan030 net` | What the tunnel may reach |
 | **WireGuard (Group)** | Pass | `10.10.10.0/24` | `This Firewall` | Test the tunnel itself (`10.10.10.1`) |
 
-Traffic **coming out of the tunnel** is filtered on the **WireGuard (Group)** tab. With no rule there, OPNsense blocks everything even after the handshake. **Apply changes** is mandatory after saving (see issues).
+Rules are read top to bottom and the first match wins, so the **Block** sits above "Admin acessa tudo". Traffic **coming out of the tunnel** is filtered on the **WireGuard (Group)** tab. With no rule there, OPNsense blocks everything even after the handshake. **Apply changes** is mandatory after saving (see issues).
 
 ### 3. Client on Kali (VLAN 10)
 ```bash
@@ -211,6 +264,51 @@ sudo wg show
 | Ping VLAN 30 (`192.168.30.1`) | Success | **Success**: 3/3, 0% loss (~0.6 to 0.9 ms) |
 | Path to VLAN 30 | Through `wg0` | **Yes**: `ip route get` → `dev wg0 src 10.10.10.2` |
 
+### 5. VPN only: direct access is blocked
+To prove the tunnel is the only path, I blocked VLAN 10 → VLAN 30 and tested both paths. Before the rule existed, a direct ping from VLAN 10 to VLAN 30 worked (3/3, using a temporary route through `eth0.10`), because ADMIN's full-access rule allowed it.
+
+![ADMIN rules](img/10-regras-admin.png)
+*ADMIN rules, in order: **Block** `vlan010 network → vlan030 network` (description "Admin so acessa servidores pela VPN"), "Admin acessa tudo" and the Pass UDP 51820.*
+
+![Block rule details](img/10-regra-block-detalhe.png)
+*Details: action **Block**, interface `vlan010`, direction `In`, protocol `any`, source `vlan010 network`, destination `vlan030 network`, `Quick` ticked.*
+
+Test on Kali, **without the tunnel** and with a temporary route through `eth0.10` to force the direct path:
+```bash
+sudo wg-quick down wg0
+sudo ip route add 192.168.30.0/24 via 192.168.10.1 dev eth0.10
+ping -c 3 -I eth0.10 192.168.30.1
+```
+![First attempt](img/10-bloqueio-primeira-tentativa.png)
+*First attempt, with the Block rule created but not yet loaded in the firewall: the direct ping (source `192.168.10.108`, `eth0.10`) still answers, 3/3. `wg0 is not a WireGuard interface` just means the tunnel was already down.*
+
+After **Apply changes** and **Reset states**:
+
+![Direct ping blocked](img/10-bloqueio-direto-100.png)
+*Direct ping through VLAN 10: **100% loss**, no `Host Unreachable` (the packet leaves and the firewall drops it).*
+
+Then remove the temporary route and bring the tunnel up:
+```bash
+sudo ip route del 192.168.30.0/24
+sudo wg-quick up wg0
+ping -c 3 192.168.30.1
+ip route get 192.168.30.1
+sudo wg show
+```
+![Ping through the tunnel with the Block active](img/10-tunel-ping-rota.png)
+*With the Block active, the ping through the tunnel answers 3/3 (0% loss, ~0.4 to 1.7 ms) and `ip route get` shows `dev wg0 src 10.10.10.2`.*
+
+![wg show after the block](img/10-tunel-wg-show-apos-bloqueio.png)
+*`sudo wg show`: recent handshake and traffic in both directions.*
+
+| Test | Expected | Actual |
+|---|---|---|
+| Direct ping VLAN 10 → VLAN 30 (`192.168.30.1`), no tunnel, Block applied | Blocked | **Blocked**: 100% loss |
+| Ping to VLAN 30 through the tunnel, Block active | Success | **Success**: 3/3, 0% loss |
+| Path of the tunnel ping | `wg0` | **Yes**: `dev wg0 src 10.10.10.2` |
+
+The Block does not affect the tunnel because WireGuard traffic leaves encrypted, over UDP 51820, to `This Firewall`, and does not match the `vlan030` rule.
+
 ### Issues found and fixes
 | Symptom | Cause | Fix |
 |---|---|---|
@@ -222,6 +320,8 @@ sudo wg show
 | 100% loss right after `wg-quick up` | The first packet triggers the handshake; the ping ended before it finished | Wait a few seconds and repeat |
 | `ping 192.168.30.1` works, `10.10.10.1` does not | The group rule covered only `vlan030 net`; `10.10.10.1` is the firewall itself, not part of that network | Rule `10.10.10.0/24 → This Firewall` |
 | New rule created but no effect | **Apply changes** was missing | Apply; the ping worked right away |
+| Block rule created and correct, but the direct ping still showed 0% loss | The change was not yet loaded in the firewall and/or an old connection state existed | **Apply changes** and **Firewall → Diagnostics → States → Reset states**; the direct ping then showed 100% loss |
+| `wg-quick: 'wg0' is not a WireGuard interface` | The tunnel was already down (for example, after rebooting Kali) | Only a warning; check with `sudo wg show` and `ip route get 192.168.30.1` whether the path is `wg0` or `eth0.10` |
 | `sudo: unable to resolve host kali` | Hostname has no `/etc/hosts` entry | Only a warning; ignored |
 
 ![Red peer on OPNsense](img/10-status-sem-handshake.png)
@@ -231,11 +331,11 @@ sudo wg show
 *`Required key not available`: the ping to `10.10.10.1` never left because `AllowedIPs` did not include the tunnel network.*
 
 ### Improvements
-- **Block VLAN 10 → VLAN 30 directly** and leave access only through the tunnel. Today VLAN 10 also reaches VLAN 30 without the VPN (ADMIN's full-access rule; I tested it with a temporary route, 3/3 replies). The next step is a **Block** rule `vlan010 net → vlan030 net` above that rule, keeping UDP 51820 open, and repeating the test: direct blocked, through the tunnel allowed.
+- Turn on **logging** for the ADMIN rules (Block and Pass) to see the block in **Live View** and identify which rule decides each packet.
 - Restrict the tunnel rule to specific ports (for example SSH and the Zabbix web interface) instead of all of VLAN 30.
 - Use a **pre-shared key** on the peer and enable the tunnel at Kali's boot (`systemctl enable wg-quick@wg0`).
 - Open Zabbix (`http://192.168.30.10`) through the tunnel and monitor `wg0` in Zabbix.
 - Reserve a fixed IP for Kali in Dnsmasq.
 
 ### Next step
-Close the README and then apply the direct VLAN 10 → VLAN 30 block to prove that only the tunnel gives access.
+With direct access blocked and tunnel access validated, the lab is complete. Back to the [README](../README.md).
