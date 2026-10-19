@@ -1,13 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 570" width="920" height="570" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 700" width="920" height="700" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
   <title id="t">Topologia do lab / Lab topology</title>
-  <desc id="d">Internet, roteador de casa, OPNsense com WAN, gerência Host-Only e tronco lab-lan com as VLANs 10, 20 e 30. A VLAN 20 é bloqueada para a VLAN 30.</desc>
+  <desc id="d">Internet, roteador de casa, OPNsense com WAN, gerência Host-Only e tronco lab-lan com as VLANs 10, 20 e 30. A VLAN 20 é bloqueada para a VLAN 30. Um túnel WireGuard liga a VLAN 10 à VLAN 30.</desc>
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="#cf222e"/>
     </marker>
+    <marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/>
+    </marker>
   </defs>
 
-  <rect x="0.5" y="0.5" width="919" height="569" rx="12" fill="#ffffff" stroke="#d0d7de"/>
+  <rect x="0.5" y="0.5" width="919" height="699" rx="12" fill="#ffffff" stroke="#d0d7de"/>
 
   <!-- Internet e roteador -->
   <rect x="380" y="18" width="160" height="36" rx="18" fill="#f6f8fa" stroke="#57606a"/>
@@ -22,11 +25,14 @@
   <text x="472" y="157" font-size="11" fill="#57606a">WAN · Bridge · DHCP (em1)</text>
 
   <!-- OPNsense -->
-  <rect x="260" y="174" width="400" height="104" rx="10" fill="#ddf4ff" stroke="#0969da" stroke-width="1.5"/>
+  <rect x="260" y="174" width="400" height="124" rx="10" fill="#ddf4ff" stroke="#0969da" stroke-width="1.5"/>
   <text x="460" y="198" text-anchor="middle" font-size="15" font-weight="700" fill="#0550ae">OPNsense (VM)</text>
   <text x="460" y="220" text-anchor="middle" font-size="12" fill="#24292f">WAN em1 · DHCP 192.168.0.x</text>
   <text x="460" y="240" text-anchor="middle" font-size="12" fill="#24292f">MGMT em0 · 192.168.56.2/24 (Host-Only)</text>
   <text x="460" y="260" text-anchor="middle" font-size="12" fill="#24292f">LabTrunk em2 · no IP (Internal Network lab-lan)</text>
+  <text x="460" y="280" text-anchor="middle" font-size="12" font-weight="600" fill="#1a7f37">WireGuard wg0 · 10.10.10.1/24 · UDP 51820</text>
+
+  <g transform="translate(0,20)">
 
   <!-- PC / gerência -->
   <rect x="24" y="186" width="190" height="80" rx="8" fill="#f6f8fa" stroke="#57606a"/>
@@ -50,6 +56,7 @@
   <text x="190" y="414" text-anchor="middle" font-size="12" fill="#24292f">192.168.10.0/24 · GW .1</text>
   <text x="190" y="434" text-anchor="middle" font-size="12" fill="#24292f">DHCP .100–.200</text>
   <text x="190" y="454" text-anchor="middle" font-size="12" fill="#24292f">Rule: Pass → any</text>
+  <text x="190" y="474" text-anchor="middle" font-size="12" fill="#1a7f37">Kali (eth0.10) · WG client 10.10.10.2</text>
 
   <!-- VLAN 20 -->
   <rect x="340" y="368" width="240" height="124" rx="10" fill="#fff8c5" stroke="#9a6700" stroke-width="1.5"/>
@@ -70,5 +77,10 @@
   <path d="M 460 492 Q 595 538 730 492" fill="none" stroke="#cf222e" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arr)"/>
   <text x="595" y="527" text-anchor="middle" font-size="12" font-weight="600" fill="#cf222e">✗ VLAN 20 → VLAN 30 blocked</text>
 
-  <text x="460" y="558" text-anchor="middle" font-size="11" fill="#57606a">VirtualBox lab · Zabbix queries the OPNsense agent from VLAN 30 (port 10050)</text>
+  <!-- Túnel WireGuard VLAN 10 -> VLAN 30 -->
+  <path d="M 150 492 Q 470 700 790 492" fill="none" stroke="#1a7f37" stroke-width="2.5" stroke-dasharray="2 0" marker-end="url(#arrg)"/>
+  <text x="470" y="634" text-anchor="middle" font-size="12" font-weight="600" fill="#1a7f37">✓ WireGuard tunnel · VLAN 10 → VLAN 30 allowed</text>
+  </g>
+
+  <text x="460" y="682" text-anchor="middle" font-size="11" fill="#57606a">VirtualBox lab · Zabbix queries the OPNsense agent from VLAN 30 (port 10050)</text>
 </svg>
